@@ -137,7 +137,9 @@
         #days { font-family: 'Dancing Script', cursive; font-size: 6.5em; margin: 35px 0 15px; text-shadow: 0 8px 30px rgba(255,105,180,1); animation: pulse 5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.92; } }
 
-        .info, .hours, .years { font-size: 1.5em; margin: 18px 0; letter-spacing: 0.5px; }
+        .info, .hours, .years, .weather-info { font-size: 1.5em; margin: 18px 0; letter-spacing: 0.5px; }
+        .weather-info { color: #ffd700; font-weight: bold; }
+
         .anniversary-msg, .wedding-section { margin: 35px 0; padding: 25px; background: rgba(255,255,255,0.18); border-radius: 22px; font-size: 1.3em; }
         textarea { height: 130px; resize: vertical; }
         .diary-list { max-height: 420px; overflow-y: auto; margin: 25px auto; width: 92%; max-width: 620px; text-align: left; }
@@ -194,9 +196,9 @@
 
     <div class="form-group">
         <p>Tỉnh/thành phố ny đang ở 🌍</p>
-        <select id="province" class="province-select">
+        <select id="province" class="province-select" onchange="showWeather(this.value)">
             <option value="">Chọn tỉnh/thành</option>
-            <!-- Danh sách 34 tỉnh + 6 thành phố trực thuộc -->
+            <!-- Danh sách 34 tỉnh + 6 thành phố trực thuộc (2026) -->
             <option value="An Giang">An Giang</option>
             <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
             <option value="Bình Dương">Bình Dương</option>
@@ -233,6 +235,7 @@
             <option value="Cần Thơ">Cần Thơ</option>
             <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
         </select>
+        <div id="weatherInfo" class="weather-info" style="margin-top: 15px;"></div>
     </div>
 
     <button onclick="updateLove()">Cập nhật & Bắt đầu đếm ngày yêu</button>
@@ -278,7 +281,7 @@
     <div class="diary-list" id="diaryList"></div>
 
     <div class="copyright">
-        Bản quyền thuộc về Kurayami và Kai (hoặc Tenebron).<br>
+        Bản quyền thuộc về Kurayami và Kai (hoặc Tenebron) & Jocelyn.<br>
         Cấm mọi hành vi sao chép, phân phối, chỉnh sửa mà không có sự cho phép bằng văn bản từ chủ sở hữu.
     </div>
 </div>
@@ -373,14 +376,36 @@ function launchConfetti() {
     draw();
 }
 
-// === LOADING & SHOW DAYS ===
+// === LOADING ===
 window.addEventListener('load', () => {
     setTimeout(() => {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('mainContent').classList.add('loaded');
-        calculateDays(); // Hiện luôn số ngày sau loading
-    }, 2800); // 2.8 giây loading
+        calculateDays(); // Hiện số ngày ngay sau loading
+    }, 2800);
 });
+
+// === HIỂN THỊ NHIỆT ĐỘ (dữ liệu giả lập cho đẹp, có thể thay bằng API thật sau) ===
+const weatherData = {
+    "Hà Nội": "18°C - Trời se lạnh, có mây",
+    "TP. Hồ Chí Minh": "32°C - Nắng nóng",
+    "Đà Nẵng": "26°C - Trời mát mẻ, biển đẹp",
+    "Hải Phòng": "19°C - Gió nhẹ",
+    "Cần Thơ": "30°C - Nắng ấm",
+    "Thừa Thiên Huế": "22°C - Mưa rào nhẹ",
+    "An Giang": "31°C - Nắng nóng",
+    "Bà Rịa - Vũng Tàu": "28°C - Biển xanh",
+    // ... thêm dữ liệu cho các tỉnh khác nếu cần
+};
+
+function showWeather(province) {
+    const weatherDiv = document.getElementById('weatherInfo');
+    if (province && weatherData[province]) {
+        weatherDiv.innerHTML = `Nhiệt độ hiện tại ở \( {province}: <strong> \){weatherData[province]}</strong> 🌡️`;
+    } else {
+        weatherDiv.innerHTML = '';
+    }
+}
 
 // === CÁC HÀM CHÍNH ===
 function updateLove() {
@@ -420,7 +445,7 @@ function calculateDays() {
     const start = new Date(saved);
     const now = new Date();
     const diff = now - start;
-    const days = Math.floor(diff / 86400000) + 1; // Ngày bắt đầu = 1 ngày
+    const days = Math.floor(diff / 86400000) + 1;
     const hours = Math.floor(diff / 3600000) + 1;
 
     document.getElementById('hours').innerText = `${hours.toLocaleString('vi-VN')} giờ hạnh phúc 💞`;
@@ -454,6 +479,7 @@ function getZodiac(birth) {
 }
 // === DIARY ===
 let diary = JSON.parse(localStorage.getItem('loveDiary')) || [];
+let lastSavedText = '';
 
 function renderDiary() {
     const list = document.getElementById('diaryList');
@@ -472,30 +498,43 @@ function renderDiary() {
 }
 
 function saveDiary(auto=false){
-    const t = document.getElementById('diaryInput').value.trim();
-    if(!t) return;
-    diary.push({text:t, timestamp:new Date().toISOString()});
+    const input = document.getElementById('diaryInput');
+    const t = input.value.trim();
+    if (!t || t === lastSavedText) return;
+
+    const lastEntry = diary[diary.length - 1];
+    if (lastEntry && lastEntry.text === t && (new Date() - new Date(lastEntry.timestamp)) < 5000) {
+        return;
+    }
+
+    diary.push({text: t, timestamp: new Date().toISOString()});
     localStorage.setItem('loveDiary', JSON.stringify(diary));
+    lastSavedText = t;
     renderDiary();
-    launchConfetti();
-    if(!auto){
-        document.getElementById('diaryInput').value = '';
+    if (!auto) {
+        input.value = '';
         alert('Đã lưu kỷ niệm ngọt ngào! 💕');
     }
+    launchConfetti();
 }
 
 function deleteDiary(i){
     if(confirm('Xóa kỷ niệm này thật sao? 😢')){
         diary.splice(i,1);
         localStorage.setItem('loveDiary', JSON.stringify(diary));
+        lastSavedText = '';
         renderDiary();
     }
 }
 
-let debounce;
+let debounceTimer;
 document.getElementById('diaryInput').addEventListener('input', () => {
-    clearTimeout(debounce);
-    debounce = setTimeout(() => saveDiary(true), 1000);
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => saveDiary(true), 800);
+});
+
+window.addEventListener('beforeunload', () => {
+    saveDiary(true);
 });
 
 // === LOAD ===
