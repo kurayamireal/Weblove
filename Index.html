@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Đếm Ngày Yêu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            text-align: center;
+            min-height: 100vh;
+            background-attachment: fixed;
+            transition: background 2.5s ease-in-out;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .spring { background: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ff69b4); }
+        .summer { background: linear-gradient(135deg, #ffd700, #ff8c00, #00bfff); }
+        .autumn { background: linear-gradient(135deg, #ff7518, #d2691e, #8b4513); }
+        .winter { background: linear-gradient(135deg, #e0ffff, #add8e6, #4682b4); }
+
+        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+
+        .container {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(14px);
+            border-radius: 32px;
+            padding: 40px 20px;
+            max-width: 740px;
+            margin: 40px auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.35);
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .container.loaded { opacity: 1; }
+
+        #loading {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+        }
+        #loading.hidden { opacity: 0; pointer-events: none; }
+        .loader-heart {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            animation: rotate 4s linear infinite;
+        }
+        .loader-heart::before, .loader-heart::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 160px;
+            background: #ff6b6b;
+            border-radius: 50px 50px 0 0;
+            top: 0;
+            left: 10px;
+            transform-origin: bottom center;
+        }
+        .loader-heart::after {
+            background: #ff9a9e;
+            left: auto;
+            right: 10px;
+        }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #loading-text {
+            margin-top: 30px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8em;
+            text-shadow: 0 5px 15px rgba(255,105,180,0.8);
+            animation: pulseText 2s infinite;
+        }
+        @keyframes pulseText {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 4em; margin-bottom: 15px; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .subtitle { font-size: 1.5em; opacity: 0.92; margin-bottom: 35px; }
+
+        input, select, textarea, button {
+            padding: 16px;
+            margin: 12px 6px;
+            font-size: 1.15em;
+            border: none;
+            border-radius: 18px;
+            width: 92%;
+            max-width: 360px;
+        }
+        input[type="date"], select, textarea { background: rgba(255,255,255,0.28); color: white; transition: all 0.3s; }
+        input:focus, textarea:focus { background: rgba(255,255,255,0.4); outline: none; box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        button {
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 18px rgba(255,107,107,0.45);
+        }
+        button:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 35px rgba(255,107,107,0.65); }
+
+        .names { font-family: 'Dancing Script', cursive; font-size: 3.5em; margin: 45px 0 25px; text-shadow: 0 5px 15px rgba(0,0,0,0.45); }
+        .zodiac { font-size: 1.6em; margin: 20px 0; opacity: 0.92; letter-spacing: 1px; }
+        .heart-container {
+            position: relative;
+            width: 280px;
+            height: 260px;
+            margin: 45px auto;
+            animation: beat 3s infinite ease-in-out;
+        }
+        @keyframes beat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .heart-outline { width: 280px; height: 260px; fill: none; stroke: #fff; stroke-width: 12; filter: drop-shadow(0 10px 25px rgba(255,105,180,0.7)); }
+        .liquid { position: absolute; bottom: 0; left: 0; width: 100%; height: 0; overflow: hidden; transition: height 2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .wave { position: absolute; width: 200%; height: 100%; background: linear-gradient(to right, #ff6b6b, #ff9a9e); border-radius: 50%; animation: wave 8s linear infinite; bottom: 0; }
+        .wave:nth-child(2) { animation-duration: 10s; opacity: 0.7; }
+        @keyframes wave { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        #days { font-family: 'Dancing Script', cursive; font-size: 6.5em; margin: 35px 0 15px; text-shadow: 0 8px 30px rgba(255,105,180,1); animation: pulse 5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.92; } }
+
+        .info, .hours, .years { font-size: 1.5em; margin: 18px 0; letter-spacing: 0.5px; }
+        .anniversary-msg, .wedding-section { margin: 35px 0; padding: 25px; background: rgba(255,255,255,0.18); border-radius: 22px; font-size: 1.3em; }
+        textarea { height: 130px; resize: vertical; }
+        .diary-list { max-height: 420px; overflow-y: auto; margin: 25px auto; width: 92%; max-width: 620px; text-align: left; }
+        .diary-entry { background: rgba(255,255,255,0.18); border-radius: 18px; padding: 18px; margin: 15px 0; position: relative; transition: transform 0.3s; }
+        .diary-entry:hover { transform: translateY(-5px); }
+        .diary-date { font-size: 0.9em; opacity: 0.85; margin-bottom: 10px; }
+        .delete-btn { position: absolute; top: 12px; right: 18px; background: rgba(255,0,0,0.65); border: none; color: white; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 1.2em; }
+        .copyright { font-size: 0.9em; margin-top: 60px; opacity: 0.82; line-height: 1.6; }
+
+        #confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+    </style>
+</head>
+<body class="spring">
+
+<!-- Màn hình loading -->
+<div id="loading">
+    <div class="loader-heart"></div>
+    <div id="loading-text">Đang đếm ngày yêu của chúng ta... 💕</div>
+</div>
+
+<canvas id="particles"></canvas>
+<canvas id="confetti"></canvas>
+
+<div class="container" id="mainContent">
+    <h1>Web Đếm Ngày Yêu</h1>
+    <p class="subtitle">Hành trình yêu thương của chúng ta 💞</p>
+
+    <div class="form-group">
+        <p>Ngày bắt đầu yêu:</p>
+        <input type="date" id="startDate">
+    </div>
+
+    <div class="form-group">
+        <p>Người thứ nhất</p>
+        <input type="text" id="name1" placeholder="Tên hiển thị">
+        <select id="gender1">
+            <option value="nam">Nam</option>
+            <option value="nu">Nữ</option>
+            <option value="khac">Khác (LGBTQ+)</option>
+        </select>
+        <input type="date" id="birth1">
+    </div>
+
+    <div class="form-group">
+        <p>Người thứ hai</p>
+        <input type="text" id="name2" placeholder="Tên hiển thị">
+        <select id="gender2">
+            <option value="nam">Nam</option>
+            <option value="nu">Nữ</option>
+            <option value="khac">Khác (LGBTQ+)</option>
+        </select>
+        <input type="date" id="birth2">
+    </div>
+
+    <div class="form-group">
+        <p>Tỉnh/thành phố ny đang ở 🌍</p>
+        <select id="province" class="province-select">
+            <option value="">Chọn tỉnh/thành</option>
+            <!-- Danh sách 34 tỉnh + 6 thành phố trực thuộc -->
+            <option value="An Giang">An Giang</option>
+            <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+            <option value="Bình Dương">Bình Dương</option>
+            <option value="Bình Định">Bình Định</option>
+            <option value="Bình Phước">Bình Phước</option>
+            <option value="Bình Thuận">Bình Thuận</option>
+            <option value="Đắk Lắk">Đắk Lắk</option>
+            <option value="Đồng Nai">Đồng Nai</option>
+            <option value="Gia Lai">Gia Lai</option>
+            <option value="Hà Giang">Hà Giang</option>
+            <option value="Hà Nam">Hà Nam</option>
+            <option value="Hậu Giang">Hậu Giang</option>
+            <option value="Hòa Bình">Hòa Bình</option>
+            <option value="Khánh Hòa">Khánh Hòa</option>
+            <option value="Kiên Giang">Kiên Giang</option>
+            <option value="Kon Tum">Kon Tum</option>
+            <option value="Lâm Đồng">Lâm Đồng</option>
+            <option value="Lạng Sơn">Lạng Sơn</option>
+            <option value="Lào Cai">Lào Cai</option>
+            <option value="Ninh Thuận">Ninh Thuận</option>
+            <option value="Phú Yên">Phú Yên</option>
+            <option value="Quảng Bình">Quảng Bình</option>
+            <option value="Quảng Nam">Quảng Nam</option>
+            <option value="Quảng Ngãi">Quảng Ngãi</option>
+            <option value="Quảng Ninh">Quảng Ninh</option>
+            <option value="Sóc Trăng">Sóc Trăng</option>
+            <option value="Tây Ninh">Tây Ninh</option>
+            <option value="Yên Bái">Yên Bái</option>
+            <!-- Thành phố trực thuộc -->
+            <option value="Hà Nội">Hà Nội</option>
+            <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+            <option value="Đà Nẵng">Đà Nẵng</option>
+            <option value="Hải Phòng">Hải Phòng</option>
+            <option value="Cần Thơ">Cần Thơ</option>
+            <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+        </select>
+    </div>
+
+    <button onclick="updateLove()">Cập nhật & Bắt đầu đếm ngày yêu</button>
+
+    <div class="names" id="namesDisplay">... 💞 ...</div>
+    <div class="zodiac" id="zodiacDisplay"></div>
+
+    <div class="heart-container" id="heartBeat">
+        <svg viewBox="0 0 260 240">
+            <path class="heart-outline" d="M130,240 C190,190 240,140 240,80 C240,30 200,0 130,55 C60,0 20,30 20,80 C20,140 70,190 130,240 Z"/>
+        </svg>
+        <div class="liquid" id="liquid">
+            <div class="wave"></div>
+            <div class="wave"></div>
+        </div>
+    </div>
+
+    <div id="days">0</div>
+    <p class="info">Ngày đang yêu nhau</p>
+
+    <div id="hours" class="hours">0 giờ hạnh phúc 💞</div>
+
+    <div id="years"></div>
+
+    <div class="anniversary-msg" id="anniversaryMsg"></div>
+
+    <div class="wedding-section" id="weddingSection" style="display:none;">
+        <p><strong>Ô hay nhỉ! Yêu nhau 5 năm rồi, sao chưa cưới đi? 😏</strong></p>
+        <button onclick="chooseWedding('yes')">Cưới luôn! 💒</button>
+        <button onclick="chooseWedding('no')">Chưa cưới đâu! 😅</button>
+        <div id="weddingDateSection" style="display:none;">
+            <p>Chọn ngày cưới đẹp nào ❤️</p>
+            <input type="date" id="weddingDate">
+            <button onclick="setWeddingDate()">Xác nhận</button>
+            <p id="weddingDateMsg"></p>
+        </div>
+        <p id="noWeddingMsg" style="display:none;"></p>
+    </div>
+
+    <h2 style="margin: 60px 0 25px;">Nhật ký tình yêu 📖</h2>
+    <textarea id="diaryInput" placeholder="Hôm nay anh/em/ny nhớ gì về chúng ta... 💕"></textarea>
+    <button onclick="saveDiary()">Lưu kỷ niệm</button>
+    <div class="diary-list" id="diaryList"></div>
+
+    <div class="copyright">
+        Bản quyền thuộc về Kurayami và Kai (hoặc Tenebron).<br>
+        Cấm mọi hành vi sao chép, phân phối, chỉnh sửa mà không có sự cho phép bằng văn bản từ chủ sở hữu.
+    </div>
+</div>
+
+<script>
+// === PARTICLES LẤP LÁNH ===
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+const particlesArray = [];
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.size > 0.2) this.size -= 0.01;
+    }
+    draw() {
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+function initParticles() {
+    for (let i = 0; i < 80; i++) particlesArray.push(new Particle());
+}
+initParticles();
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particlesArray.forEach((p, i) => {
+        p.update();
+        p.draw();
+        if (p.size <= 0.2) {
+            particlesArray.splice(i, 1);
+            particlesArray.push(new Particle());
+        }
+    });
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// === CONFETTI ===
+function launchConfetti() {
+    const confettiCanvas = document.getElementById('confetti');
+    const ctxConf = confettiCanvas.getContext('2d');
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+
+    const colors = ['#ff6b6b', '#ff9a9e', '#ffffff', '#ffd700', '#ff69b4'];
+    const confetti = [];
+    for (let i = 0; i < 100; i++) {
+        confetti.push({
+            x: Math.random() * confettiCanvas.width,
+            y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+            r: Math.random() * 6 + 4,
+            d: Math.random() * 100 + 50,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            tilt: Math.random() * 10 - 10,
+            tiltAngle: 0
+        });
+    }
+
+    function draw() {
+        ctxConf.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        confetti.forEach((c, i) => {
+            c.tiltAngle += 0.1;
+            c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+            c.tilt = Math.sin(c.tiltAngle) * 15;
+            if (c.y > confettiCanvas.height) confetti.splice(i, 1);
+            ctxConf.fillStyle = c.color;
+            ctxConf.beginPath();
+            ctxConf.moveTo(c.x + c.tilt + c.r / 4, c.y);
+            ctxConf.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
+            ctxConf.lineTo(c.x + c.tilt - c.r / 4, c.y + c.tilt);
+            ctxConf.closePath();
+            ctxConf.fill();
+        });
+        if (confetti.length) requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+// === LOADING & SHOW DAYS ===
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('mainContent').classList.add('loaded');
+        calculateDays(); // Hiện luôn số ngày sau loading
+    }, 2800); // 2.8 giây loading
+});
+
+// === CÁC HÀM CHÍNH ===
+function updateLove() {
+    const start = document.getElementById('startDate').value;
+    if (!start) return alert('Chọn ngày bắt đầu yêu nhé!');
+    localStorage.setItem('startDate', start);
+    localStorage.setItem('name1', document.getElementById('name1').value.trim() || 'Người ấy 1');
+    localStorage.setItem('name2', document.getElementById('name2').value.trim() || 'Người ấy 2');
+    localStorage.setItem('gender1', document.getElementById('gender1').value);
+    localStorage.setItem('gender2', document.getElementById('gender2').value);
+    localStorage.setItem('birth1', document.getElementById('birth1').value);
+    localStorage.setItem('birth2', document.getElementById('birth2').value);
+    localStorage.setItem('provinceNy', document.getElementById('province').value);
+    calculateDays();
+    launchConfetti();
+}
+
+function calculateDays() {
+    const saved = localStorage.getItem('startDate');
+    if (!saved) return;
+
+    const n1 = localStorage.getItem('name1') || 'Người ấy 1';
+    const n2 = localStorage.getItem('name2') || 'Người ấy 2';
+    const g1 = localStorage.getItem('gender1') || 'nam';
+    const g2 = localStorage.getItem('gender2') || 'nu';
+    const b1 = localStorage.getItem('birth1');
+    const b2 = localStorage.getItem('birth2');
+
+    let couple = '💑';
+    if ((g1==='nam'&&g2==='nu')||(g1==='nu'&&g2==='nam')) couple = '👩‍❤️‍👨';
+    else if (g1==='nam'&&g2==='nam') couple = '👨‍❤️‍👨';
+    else if (g1==='nu'&&g2==='nu') couple = '👩‍❤️‍👩';
+
+    document.getElementById('namesDisplay').innerHTML = `${n1} ${couple} ${n2}`;
+    document.getElementById('zodiacDisplay').innerHTML = `${getZodiac(b1)} & ${getZodiac(b2)}`;
+
+    const start = new Date(saved);
+    const now = new Date();
+    const diff = now - start;
+    const days = Math.floor(diff / 86400000) + 1; // Ngày bắt đầu = 1 ngày
+    const hours = Math.floor(diff / 3600000) + 1;
+
+    document.getElementById('hours').innerText = `${hours.toLocaleString('vi-VN')} giờ hạnh phúc 💞`;
+
+    const years = Math.floor(days / 365);
+    const dayThis = days % 365 || 365;
+
+    document.getElementById('days').innerText = days;
+    document.getElementById('liquid').style.height = `${(dayThis / 365) * 100}%`;
+
+    document.getElementById('years').innerText = years ? `Năm thứ ${years + 1} 💞` : `Năm đầu tiên 💕`;
+}
+
+function getZodiac(birth) {
+    if (!birth) return "Chưa biết 🌟";
+    const d = new Date(birth);
+    const m = d.getMonth() + 1, day = d.getDate();
+    if ((m==3&&day>=21)||(m==4&&day<=19)) return "Bạch Dương ♈";
+    if ((m==4&&day>=20)||(m==5&&day<=20)) return "Kim Ngưu ♉";
+    if ((m==5&&day>=21)||(m==6&&day<=20)) return "Song Tử ♊";
+    if ((m==6&&day>=21)||(m==7&&day<=22)) return "Cự Giải ♋";
+    if ((m==7&&day>=23)||(m==8&&day<=22)) return "Sư Tử ♌";
+    if ((m==8&&day>=23)||(m==9&&day<=22)) return "Xử Nữ ♍";
+    if ((m==9&&day>=23)||(m==10&&day<=22)) return "Thiên Bình ♎";
+    if ((m==10&&day>=23)||(m==11&&day<=21)) return "Bọ Cạp ♏";
+    if ((m==11&&day>=22)||(m==12&&day<=21)) return "Nhân Mã ♐";
+    if ((m==12&&day>=22)||(m==1&&day<=19)) return "Ma Kết ♑";
+    if ((m==1&&day>=20)||(m==2&&day<=18)) return "Bảo Bình ♒";
+    if ((m==2&&day>=19)||(m==3&&day<=20)) return "Song Ngư ♓";
+    return "Chưa biết 🌟";
+}
+// === DIARY ===
+let diary = JSON.parse(localStorage.getItem('loveDiary')) || [];
+
+function renderDiary() {
+    const list = document.getElementById('diaryList');
+    list.innerHTML = '';
+    diary.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+    diary.forEach((e,i) => {
+        const div = document.createElement('div');
+        div.className = 'diary-entry';
+        div.innerHTML = `
+            <div class="diary-date">${new Date(e.timestamp).toLocaleString('vi-VN')}</div>
+            <p>${e.text.replace(/\n/g,'<br>')}</p>
+            <button class="delete-btn" onclick="deleteDiary(${i})">×</button>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function saveDiary(auto=false){
+    const t = document.getElementById('diaryInput').value.trim();
+    if(!t) return;
+    diary.push({text:t, timestamp:new Date().toISOString()});
+    localStorage.setItem('loveDiary', JSON.stringify(diary));
+    renderDiary();
+    launchConfetti();
+    if(!auto){
+        document.getElementById('diaryInput').value = '';
+        alert('Đã lưu kỷ niệm ngọt ngào! 💕');
+    }
+}
+
+function deleteDiary(i){
+    if(confirm('Xóa kỷ niệm này thật sao? 😢')){
+        diary.splice(i,1);
+        localStorage.setItem('loveDiary', JSON.stringify(diary));
+        renderDiary();
+    }
+}
+
+let debounce;
+document.getElementById('diaryInput').addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => saveDiary(true), 1000);
+});
+
+// === LOAD ===
+window.onload = () => {
+    document.getElementById('startDate').value = localStorage.getItem('startDate') || '';
+    document.getElementById('name1').value = localStorage.getItem('name1') || '';
+    document.getElementById('name2').value = localStorage.getItem('name2') || '';
+    document.getElementById('gender1').value = localStorage.getItem('gender1') || 'nam';
+    document.getElementById('gender2').value = localStorage.getItem('gender2') || 'nu';
+    document.getElementById('birth1').value = localStorage.getItem('birth1') || '';
+    document.getElementById('birth2').value = localStorage.getItem('birth2') || '';
+    document.getElementById('province').value = localStorage.getItem('provinceNy') || '';
+
+    setSeasonBackground();
+    calculateDays();
+    renderDiary();
+};
+</script>
+</body>
+</html>
