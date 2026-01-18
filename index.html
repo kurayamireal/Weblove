@@ -3,103 +3,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Thông Báo - Web Tình Yêu</title>
+  <title>Thông Báo Update Website</title>
+
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-      color: #333;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(135deg, #050505, #111);
+      color: #eee;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
     }
+
     .container {
-      max-width: 700px;
-      padding: 40px 20px;
-      background: rgba(255, 255, 255, 0.92);
+      max-width: 800px;
+      padding: 40px 25px;
+      background: #0d0d0d;
       border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border: 1px solid #222;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
     }
+
     h1 {
-      color: #e74c3c;
+      color: #ff4d6d;
+      font-size: 2.5em;
       margin-bottom: 10px;
-      font-size: 2.8em;
     }
+
     .subtitle {
-      font-size: 1.3em;
-      color: #555;
-      margin-bottom: 30px;
+      font-size: 1.2em;
+      color: #ccc;
+      margin-bottom: 25px;
     }
+
     #countdown {
-      font-size: 3.5em;
+      font-size: 2.6em;
       font-weight: bold;
-      color: #c0392b;
-      margin: 30px 0;
-      letter-spacing: 4px;
+      color: #ff4d6d;
+      margin: 25px 0;
+      letter-spacing: 2px;
     }
+
     .note {
-      font-size: 1.1em;
-      line-height: 1.6;
-      color: #444;
-      margin-top: 40px;
+      font-size: 1.05em;
+      line-height: 1.7;
+      color: #ddd;
+      margin-top: 25px;
       padding: 20px;
-      background: #fff0f0;
-      border-radius: 12px;
-      border: 1px solid #ffcccc;
+      background: #080808;
+      border-radius: 15px;
+      border: 1px solid #222;
     }
-    .heart {
-      color: #e74c3c;
-      font-size: 1.4em;
+
+    .highlight {
+      color: #ff4d6d;
+      font-weight: bold;
+    }
+
+    /* Chữ đen viền xanh cho Kurayami */
+    .signature {
+      color: #000;
+      font-weight: bold;
+      text-shadow:
+        -1px -1px 0 #00ff88,
+         1px -1px 0 #00ff88,
+        -1px  1px 0 #00ff88,
+         1px  1px 0 #00ff88,
+         0  0 8px #00ff88;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Thông Báo Quan Trọng <span class="heart">💕</span></h1>
-  
-  <p class="subtitle">Web tình yêu sẽ được update lại sau <strong>7 tháng</strong> nữa!</p>
-  
+  <h1>📢 Thông Báo Update Website</h1>
+
+  <p class="subtitle">
+    Website sẽ được update lại sau <strong class="highlight">7 tháng</strong>,  
+    dự kiến vào ngày <strong class="highlight">15/08/2026</strong>.
+  </p>
+
   <div id="countdown">Đang tính toán...</div>
-  
+
   <div class="note">
-    <strong>Hiện tại tạm ngừng update nội dung mới.</strong><br><br>
-    Người chịu trách nhiệm chính (Kurayami) sẽ quay lại update giao diện + kỹ thuật sau.<br>
-    Thời gian dự kiến hoàn thành và update lại: <strong>ngày 15 tháng 8 năm 2026</strong>.<br><br>
-    Xin lỗi mọi người vì sự gián đoạn này. Cảm ơn các bạn đã luôn ủng hộ và chờ đợi nhé! <span class="heart">❤️</span><br>
-    Mình sẽ cố gắng làm cho web đẹp và ý nghĩa hơn khi quay lại.
+    Hiện tại website sẽ <strong>tạm ngưng cập nhật nội dung mới</strong> để chuẩn bị cho đợt cải thiện lớn.<br><br>
+
+    Người chịu trách nhiệm đảm bảo và trực tiếp thực hiện update giao diện, hệ thống và kỹ thuật là:  
+    <br><span class="signature">Kurayami</span><br><br>
+
+    Website sau khi trở lại sẽ được thiết kế lại hoàn toàn theo phong cách  
+    <strong class="highlight">Dark (tông đen)</strong>, tối ưu hiệu năng và trải nghiệm người dùng.<br><br>
+
+    Chúng mình chân thành gửi lời <strong>xin lỗi</strong> đến tất cả mọi người vì sự gián đoạn này.  
+    Cảm ơn mọi người đã luôn ủng hộ và kiên nhẫn chờ đợi trong thời gian qua.<br><br>
+
+    Khi website quay lại, chất lượng sẽ được nâng cao hơn, ổn định hơn và xứng đáng với sự tin tưởng của mọi người.
   </div>
 </div>
 
 <script>
-// Ngày target cố định: 15/08/2026 00:00:00 (giờ Việt Nam +07)
-const targetDate = new Date('2026-08-15T00:00:00+07:00').getTime();
+// Mốc thời gian cố định: 15/08/2026 00:00:00 giờ Việt Nam
+const targetDate = new Date("2026-08-14T17:00:00Z").getTime();
 
 function updateCountdown() {
-  const now = new Date().getTime();
+  const now = Date.now();
   const distance = targetDate - now;
 
   if (distance <= 0) {
-    document.getElementById('countdown').innerHTML = "ĐÃ ĐẾN LÚC UPDATE LẠI! 🎉";
+    document.getElementById("countdown").innerHTML = "ĐÃ ĐẾN THỜI ĐIỂM UPDATE 🎉";
     return;
   }
 
   const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((distance / (1000 * 60)) % 60);
+  const seconds = Math.floor((distance / 1000) % 60);
 
-  document.getElementById('countdown').innerHTML = 
+  document.getElementById("countdown").innerHTML =
     `${days} ngày : ${hours.toString().padStart(2,'0')} giờ : ${minutes.toString().padStart(2,'0')} phút : ${seconds.toString().padStart(2,'0')} giây`;
 }
 
-// Cập nhật mỗi giây
 setInterval(updateCountdown, 1000);
-updateCountdown(); // Chạy lần đầu ngay lập tức
+updateCountdown();
 </script>
 
 </body>
