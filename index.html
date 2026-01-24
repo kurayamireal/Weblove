@@ -11,19 +11,50 @@
             --bg-color: #050505;
             --container-bg: #0d0d0d;
             --text-color: #eee;
+            --card-bg: #000;
+            --border-color: #333;
             --warning-color: #ffcc00;
             --demo-color: #00d4ff;
             --study-color: #a29bfe;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .light-mode {
+            --bg-color: #f0f2f5;
+            --container-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --card-bg: #f8f9fa;
+            --border-color: #ddd;
         }
 
         body {
             margin: 0; padding: 0;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a 0%, var(--bg-color) 100%);
+            font-family: var(--font-main);
+            background: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
             display: flex; align-items: center; justify-content: center;
-            padding: 20px 0;
+            padding: 60px 0;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
         }
 
         .container {
@@ -31,8 +62,8 @@
             padding: 40px 30px;
             background: var(--container-bg);
             border-radius: 24px;
-            border: 1px solid #333;
-            box-shadow: 0 30px 80px rgba(0,0,0,1);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
             animation: fadeIn 0.8s ease-out;
         }
 
@@ -57,11 +88,11 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .time-card {
-            background: #000; border: 1px solid #222;
+            background: var(--card-bg); border: 1px solid var(--border-color);
             padding: 20px; border-radius: 15px; text-align: center;
         }
 
@@ -69,30 +100,81 @@
         .time-value { font-size: 1.3em; font-weight: bold; color: var(--demo-color); }
         .time-value.final { color: var(--primary-color); }
 
+        .countdown-wrapper {
+            background: rgba(255, 77, 109, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 25px 15px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .time-segment span {
+            display: block;
+            font-size: 2.5em;
+            font-weight: 900;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .segment-label { font-size: 0.65em; color: #666; text-transform: uppercase; margin-top: 8px; font-weight: bold; }
+
         .note {
-            font-size: 1rem; line-height: 1.9; color: #ccc;
-            padding: 30px; background: #080808;
-            border-radius: 20px; text-align: justify; border: 1px solid #1a1a1a;
+            font-size: 1rem; line-height: 1.9; color: var(--text-color);
+            padding: 30px; background: var(--card-bg);
+            border-radius: 20px; text-align: justify; border: 1px solid var(--border-color);
         }
 
         .highlight { color: var(--primary-color); font-weight: bold; }
-        .name-tag { font-weight: 900; color: #000; padding: 2px 6px; border-radius: 4px; display: inline-block; line-height: 1.2; }
-        .kurayami { text-shadow: -1px -1px 0 #00ff88, 1px -1px 0 #00ff88, -1px 1px 0 #00ff88, 1px 1px 0 #00ff88; }
-        .tenebron { text-shadow: -1px -1px 0 #7000ff, 1px -1px 0 #7000ff, -1px 1px 0 #7000ff, 1px 1px 0 #7000ff; }
+        .name-tag { font-weight: 900; color: #000; padding: 2px 8px; border-radius: 6px; display: inline-block; line-height: 1.2; margin: 2px; }
+        
+        .kurayami { background: #00ff88; box-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+        .tenebron { background: #7000ff; color: #fff; box-shadow: 0 0 10px rgba(112, 0, 255, 0.5); }
+        .shan { background: #ff9f43; box-shadow: 0 0 10px rgba(255, 159, 67, 0.5); }
+        .nam-gamer { background: #00d4ff; box-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+        
         .study-tag { color: var(--study-color); font-weight: bold; border-bottom: 1px dashed var(--study-color); }
 
         ul { margin: 15px 0; padding-left: 20px; }
         li { margin-bottom: 10px; }
 
         .footer-text { font-size: 0.9em; color: #666; margin-top: 25px; font-style: italic; text-align: center; }
+        
+        .policy-link {
+            display: block;
+            margin-top: 20px;
+            color: var(--demo-color);
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: 0.3s;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .policy-link:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
 
         @media (max-width: 600px) {
             .timeline-container { grid-template-columns: 1fr; }
-            .note { padding: 20px; text-align: left; }
+            .time-segment span { font-size: 1.8em; }
+            .controls { top: 10px; right: 10px; }
         }
     </style>
 </head>
-<body>
+<body id="body-tag">
+
+<div class="controls">
+    <button class="control-btn" onclick="toggleTheme()">🌓 Sáng / Tối</button>
+</div>
 
 <div class="container">
     <div class="alert-box">⚠️ CẢNH BÁO BẢO MẬT & THAY ĐỔI LỘ TRÌNH ⚠️</div>
@@ -109,30 +191,78 @@
         </div>
     </div>
 
+    <div class="countdown-wrapper">
+        <div class="time-label">Sẽ trở lại sau</div>
+        <div class="countdown-timer" id="timer">
+            <div class="time-segment"><span id="days">00</span><div class="segment-label">Ngày</div></div>
+            <div class="time-segment"><span id="hours">00</span><div class="segment-label">Giờ</div></div>
+            <div class="time-segment"><span id="minutes">00</span><div class="segment-label">Phút</div></div>
+            <div class="time-segment"><span id="seconds">00</span><div class="segment-label">Giây</div></div>
+        </div>
+    </div>
+
     <div class="note">
         Chào tất cả mọi người, <br><br>
         Có lẽ thời gian qua các bạn đã nhận thấy sự im lặng bất thường của website. Hôm nay, chúng mình xin phép được chia sẻ rõ ràng hơn về những biến cố và khó khăn mà đội ngũ đang phải đối mặt. <br><br>
        
         Đầu tiên là một sự cố ngoài ý muốn: Thành viên cũ <strong class="highlight">Jo</strong> đã rời nhóm và có hành vi phản bội team khi tự ý tiết lộ toàn bộ mã nguồn cho bên thứ ba. Điều này buộc <span class="name-tag kurayami">Kurayami</span> và <span class="name-tag tenebron">Tenebron</span> phải đưa ra quyết định cực kỳ khó khăn là <strong>viết lại toàn bộ 100% mã nguồn</strong> từ con số không. Website tương lai sẽ được xây dựng trên một nền tảng hoàn toàn mới với hệ thống mã hóa phức tạp hơn để đảm bảo tính an toàn và độc quyền tuyệt đối. <br><br>
 
-        Thứ hai, chúng mình muốn khẳng định rằng: Dù rất tâm huyết với dự án, nhưng cả mình và <span class="name-tag tenebron">Tenebron</span> <strong>sẽ không bỏ học</strong>. Việc cân bằng giữa khối lượng code khổng lồ và chương trình học là một thử thách rất lớn. <br><br>
+        Tuy nhiên, đội ngũ hiện tại đã được củng cố thêm với sự tham gia của <span class="name-tag shan">Shan</span> và <span class="name-tag nam-gamer">Nấm Gamer</span>. Dù cả hai vẫn đang trong quá trình học tập căng thẳng, họ vẫn cam kết sẽ dành thời gian hỗ trợ team trong việc lên ý tưởng và viết code để đẩy nhanh tiến độ dự án. <br><br>
 
-        Chính vì vậy, tiến độ chắc chắn sẽ bị ảnh hưởng, đặc biệt là vào các <span class="study-tag">kỳ thi quan trọng</span>. Giống như bạn <strong>Kai</strong> hiện đang phải tạm dừng để tập trung học tập, mình và Tenebron cũng sẽ ưu tiên việc thi cử khi đến đợt. Điều này có nghĩa là sẽ có những khoảng thời gian dự án bị delay để chúng mình hoàn thành trách nhiệm của một học sinh/sinh viên. <br><br>
+        Thứ hai, chúng mình muốn khẳng định rằng: Dù rất tâm huyết, nhưng cả đội ngũ <strong>sẽ không bỏ học</strong>. Việc cân bằng giữa khối lượng code khổng lồ và chương trình học là một thử thách rất lớn. <br><br>
+
+        Chính vì vậy, tiến độ chắc chắn sẽ bị ảnh hưởng vào các <span class="study-tag">kỳ thi quan trọng</span>. Giống như bạn <strong>Kai</strong> hiện đang tạm dừng để tập trung học tập, các thành viên còn lại cũng sẽ ưu tiên việc thi cử khi đến đợt. Điều này có nghĩa là sẽ có những khoảng thời gian dự án bị delay để chúng mình hoàn thành trách nhiệm của một học sinh/sinh viên. <br><br>
 
         <strong>Lộ trình dự kiến trong năm 2026:</strong>
         <ul>
-            <li><strong>Tháng 12/02/2026:</strong> Chúng mình sẽ cố gắng ra mắt bản <strong>Demo</strong> nhanh nhất để mọi người có cái nhìn đầu tiên về giao diện mới. Sau đó, bản Demo sẽ được đóng lại để tiếp tục nâng cấp.</li>
-            <li><strong>Tháng 02 - Tháng 08/2026:</strong> Giai đoạn tập trung mã hóa, sửa lỗi và hoàn thiện các tính năng cốt lõi (có thể bị chậm lại vào các kỳ thi).</li>
-            <li><strong>Tháng 15/08/2026:</strong> Chính thức trở lại với một diện mạo Dark Mode hoàn hảo và bảo mật nhất.</li>
+            <li><strong>Tháng 12/02/2026:</strong> Ra mắt bản <strong>Demo</strong> trải nghiệm diện mạo mới.</li>
+            <li><strong>Tháng 02 - Tháng 08/2026:</strong> Giai đoạn tập trung mã hóa, sửa lỗi và bảo mật lõi.</li>
+            <li><strong>Ngày 15/08/2026:</strong> Chính thức trở lại với phiên bản hoàn hảo nhất.</li>
         </ul>
 
-        Vì nhân sự hiện tại chỉ còn đúng 2 người gánh vác, cộng thêm áp lực học hành thi cử, những tranh cãi nảy lửa giữa hai đứa mình đôi khi vẫn xảy ra để tìm ra giải pháp tốt nhất. Rất mong mọi người không trách, thấu hiểu và tiếp tục kiên nhẫn đồng hành cùng chúng mình. <br><br>
+        Vì nhân sự hiện tại chỉ còn 4 người gánh vác, rất mong mọi người thấu hiểu và tiếp tục kiên nhẫn đồng hành cùng chúng mình. <br><br>
 
         Cảm ơn sự ủng hộ vô giá của các bạn!
        
         <div class="footer-text">"Mọi sự chờ đợi đều sẽ được đền đáp xứng đáng."</div>
+        
+        <a href="https://kurayamireal.github.io/Chinhsachquyenriengtu/" target="_blank" class="policy-link">Chính sách quyền riêng tư</a>
     </div>
 </div>
+
+<script>
+    const body = document.getElementById('body-tag');
+    if(localStorage.getItem('theme') === 'light') body.classList.add('light-mode');
+
+    function toggleTheme() {
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+    }
+
+    function startCountdown() {
+        const targetDate = new Date("August 15, 2026 00:00:00").getTime();
+        const updateTimer = () => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+
+            if (distance < 0) {
+                document.getElementById("timer").innerHTML = "<h2>ĐÃ TRỞ LẠI!</h2>";
+            }
+        };
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    }
+    startCountdown();
+</script>
 
 </body>
 </html>
